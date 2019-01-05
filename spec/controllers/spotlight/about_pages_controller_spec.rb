@@ -36,16 +36,17 @@ describe Spotlight::AboutPagesController, type: :controller, versioning: true do
       describe 'on the main about page' do
         it 'is successful' do
           expect(controller).to receive(:add_breadcrumb).with('Home', exhibit_root_path(exhibit))
-          expect(controller).to receive(:add_breadcrumb).with('About', [exhibit, page])
+          expect(controller).to receive(:add_breadcrumb).with('About', [a_kind_of(ActionDispatch::Routing::RoutesProxy), exhibit, page])
           get :show, params: { id: page, exhibit_id: exhibit }
           expect(assigns(:page)).to eq page
           expect(assigns(:exhibit)).to eq exhibit
         end
       end
+
       describe 'on a different about page' do
         it 'is successful' do
           expect(controller).to receive(:add_breadcrumb).with('Home', exhibit_root_path(exhibit))
-          expect(controller).to receive(:add_breadcrumb).with('About', [exhibit, page])
+          expect(controller).to receive(:add_breadcrumb).with('About', [a_kind_of(ActionDispatch::Routing::RoutesProxy), exhibit, page])
           expect(controller).to receive(:add_breadcrumb).with(page2.title, [exhibit, page2])
           get :show, params: { id: page2, exhibit_id: exhibit }
           expect(assigns(:page)).to eq page2
@@ -110,6 +111,7 @@ describe Spotlight::AboutPagesController, type: :controller, versioning: true do
           expect(assigns(:exhibit)).to eq exhibit
         end
       end
+
       describe 'on a different about page' do
         it 'is successful' do
           expect(controller).to receive(:add_breadcrumb).with('Home', exhibit_root_path(exhibit))
@@ -135,12 +137,14 @@ describe Spotlight::AboutPagesController, type: :controller, versioning: true do
         expect(assigns(:exhibit)).to eq exhibit
       end
     end
+
     describe 'POST create' do
       it 'redirects to the about page index' do
         post :create, params: { about_page: { title: 'MyString' }, exhibit_id: exhibit }
         expect(response).to redirect_to(exhibit_about_pages_path(exhibit))
       end
     end
+
     describe 'PUT update' do
       let!(:page) { FactoryBot.create(:about_page, exhibit: exhibit) }
       it 'redirects to the about page' do
@@ -150,11 +154,13 @@ describe Spotlight::AboutPagesController, type: :controller, versioning: true do
         expect(flash[:notice]).to have_link 'Undo changes'
       end
     end
+
     describe 'POST update_all' do
       let!(:page1) { FactoryBot.create(:about_page, exhibit: exhibit) }
       let!(:page2) { FactoryBot.create(:about_page, exhibit: exhibit, published: true) }
       let!(:page3) { FactoryBot.create(:about_page, exhibit: exhibit, published: true) }
       before { request.env['HTTP_REFERER'] = 'http://example.com' }
+
       it 'updates whether they are on the landing page' do
         post :update_all, params: {
           exhibit_id: page1.exhibit,
